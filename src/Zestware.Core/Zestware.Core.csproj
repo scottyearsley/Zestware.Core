@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>Zestware</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="Zestware.Core.csproj.DotSettings" />
+    </ItemGroup>
+
+</Project>
