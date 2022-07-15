@@ -3,8 +3,17 @@ using System.Text;
 
 namespace Zestware
 {
+    /// <summary>
+    /// A collection of string extensions. 
+    /// </summary>
     public static class StringExtensions
     {
+        /// <summary>
+        /// Performs a case-insensitive equality check with a default string comparison.
+        /// </summary>
+        /// <param name="this">The string instance.</param>
+        /// <param name="comparison">The comparison string</param>
+        /// <returns></returns>
         public static bool EqualsCaseInsensitive(this string @this, string comparison)
         {
             return @this.Equals(comparison, StringComparison.OrdinalIgnoreCase);
@@ -17,11 +26,21 @@ namespace Zestware
 
         public static string ToCamelCase(this string @this)
         {
+            if (@this is null)
+            {
+                throw new ArgumentNullException(nameof(@this));
+            }
+            
             return ConvertCaseString(@this, Case.CamelCase);
         }
 
         public static string ToPascalCase(this string @this)
         {
+            if (@this is null)
+            {
+                throw new ArgumentNullException(nameof(@this));
+            }
+            
             return ConvertCaseString(@this, Case.PascalCase);
         }
         
@@ -45,9 +64,9 @@ namespace Zestware
                 var chars = s.ToCharArray();
                 if (chars.Length > 0)
                 {
-                    chars[0] = ((new String(chars[0], 1)).ToUpper().ToCharArray())[0];
+                    chars[0] = ((new string(chars[0], 1)).ToUpper().ToCharArray())[0];
                 }
-                sb.Append(new String(chars));
+                sb.Append(new string(chars));
             }
             return sb.ToString();
         }
