@@ -10,6 +10,23 @@ public class JsonExtensionTests
         public string? Key { get; set; }
         public string? Value { get; set; }
     }
+
+    [Fact]
+    public void ToJson_object_returnsJson()
+    {
+        var obj = new KeyValue { Key = "colour", Value = "red" };
+        var result = obj.ToJson();
+        Assert.NotNull(result);
+        Assert.Equal(@"{""key"":""colour"",""value"":""red""}", result);
+    }
+    
+    [Fact]
+    public void ToJson_null_returnsJson()
+    {
+        KeyValue obj = null!;
+        var result = obj.ToJson();
+        Assert.Null(result);
+    }
     
     [Fact]
     public void FromJson_typed_returnsObject()
