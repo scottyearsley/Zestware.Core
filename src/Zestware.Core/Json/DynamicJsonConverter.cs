@@ -25,9 +25,9 @@ public class DynamicJsonConverter : JsonConverter<dynamic>
 
         if (reader.TokenType == JsonTokenType.Number)
         {
-            if (reader.TryGetInt64(out var l))
+            if (reader.TryGetInt64(out var longValue))
             {
-                return l;
+                return longValue;
             }
 
             return reader.GetDouble();
@@ -45,13 +45,13 @@ public class DynamicJsonConverter : JsonConverter<dynamic>
 
         if (reader.TokenType == JsonTokenType.StartObject)
         {
-            using JsonDocument documentV = JsonDocument.ParseValue(ref reader);
-            return ReadObject(documentV.RootElement);
+            using var jsonDocument = JsonDocument.ParseValue(ref reader);
+            return ReadObject(jsonDocument.RootElement);
         }
 
         // Use JsonElement as fallback.
         // Newtonsoft uses JArray or JObject.
-        JsonDocument document = JsonDocument.ParseValue(ref reader);
+        var document = JsonDocument.ParseValue(ref reader);
         return document.RootElement.Clone();
     }
 
@@ -60,9 +60,9 @@ public class DynamicJsonConverter : JsonConverter<dynamic>
         IDictionary<string, object> expandoObject = new ExpandoObject()!;
         foreach (var obj in jsonElement.EnumerateObject())
         {
-            var k = obj.Name;
+            var objName = obj.Name;
             var value = ReadValue(obj.Value);
-            expandoObject[k] = value!;
+            expandoObject[objName] = value!;
         }
 
         return expandoObject;
@@ -70,7 +70,7 @@ public class DynamicJsonConverter : JsonConverter<dynamic>
 
     private object? ReadValue(JsonElement jsonElement)
     {
-        object? result = null;
+        object? result;
         switch (jsonElement.ValueKind)
         {
             case JsonValueKind.Object:
@@ -80,17 +80,29 @@ public class DynamicJsonConverter : JsonConverter<dynamic>
                 result = ReadList(jsonElement);
                 break;
             case JsonValueKind.String:
-                //TODO: Missing Datetime&Bytes Convert
+                //TODO: Bytes Convert
+                if (jsonElement.TryGetDateTime(out var dateTimeValue))
+                {
+                    result = dateTimeValue;
+                    break;
+                }
                 result = jsonElement.GetString();
                 break;
             case JsonValueKind.Number:
                 //TODO: more num type
                 result = 0;
-                if (jsonElement.TryGetInt64(out long l))
+                if (jsonElement.TryGetInt64(out var longValue))
                 {
-                    result = l;
+                    result = longValue;
                 }
-
+                if (jsonElement.TryGetDecimal(out var decimalValue))
+                {
+                    result = decimalValue;
+                }
+                if (jsonElement.TryGetDouble(out var doubleValue))
+                {
+                    result = doubleValue;
+                }
                 break;
             case JsonValueKind.True:
                 result = true;
@@ -124,6 +136,6 @@ public class DynamicJsonConverter : JsonConverter<dynamic>
         object value,
         JsonSerializerOptions options)
     {
-        // writer.WriteStringValue(value.ToString());
+        // Unsupported
     }
 }

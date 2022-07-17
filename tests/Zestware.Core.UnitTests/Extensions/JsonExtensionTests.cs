@@ -5,29 +5,32 @@ namespace Zestware.Core.UnitTests.Extensions;
 
 public class JsonExtensionTests
 {
-    private class KeyValue
-    {
-        public string? Key { get; set; }
-        public string? Value { get; set; }
-    }
-
     [Fact]
-    public void ToJson_object_returnsJson()
+    public void ToJson_validObject_returnsJson()
     {
         var obj = new KeyValue { Key = "colour", Value = "red" };
         var result = obj.ToJson();
         Assert.NotNull(result);
-        Assert.Equal(@"{""key"":""colour"",""value"":""red""}", result);
+        Assert.Equal("{\"key\":\"colour\",\"value\":\"red\"}", result);
     }
     
     [Fact]
-    public void ToJson_null_returnsJson()
+    public void ToJson_prettyPrint_returnsIndentedJson()
+    {
+        var obj = new KeyValue { Key = "colour", Value = "red" };
+        var result = obj.ToJson(true);
+        Assert.NotNull(result);
+        Assert.Equal("{\r\n  \"key\": \"colour\",\r\n  \"value\": \"red\"\r\n}", result);
+    }
+
+    [Fact]
+    public void ToJson_nullObject_returnsNull()
     {
         KeyValue obj = null!;
         var result = obj.ToJson();
         Assert.Null(result);
     }
-    
+
     [Fact]
     public void FromJson_typed_returnsObject()
     {
@@ -38,7 +41,7 @@ public class JsonExtensionTests
         Assert.Equal("colour", result!.Key);
         Assert.Equal("red", result.Value);
     }
-    
+
     [Fact]
     public void FromJson_untyped_returnsDynamic()
     {
@@ -48,5 +51,11 @@ public class JsonExtensionTests
         Assert.NotNull(result);
         Assert.Equal("colour", (string)result!.key);
         Assert.Equal("red", (string)result.value);
+    }
+
+    private class KeyValue
+    {
+        public string? Key { get; set; }
+        public string? Value { get; set; }
     }
 }

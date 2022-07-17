@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,21 +8,17 @@ namespace Zestware.Async;
 // Code 'borrowed' from:
 // http://stackoverflow.com/questions/5095183/how-would-i-run-an-async-taskt-method-synchronously
 
-[DebuggerStepThrough]
-public static class AsyncHelpers
+public static class AsyncHelper
 {
     /// <summary>
     /// Executes an async Task{T} method which has a void return value synchronously
     /// </summary>
     /// <param name="task">Task{T} method to execute</param>
-    [DebuggerHidden]
-    [DebuggerStepThrough]
     public static void RunSync(Func<Task> task)
     {
         var oldContext = SynchronizationContext.Current;
         var synch = new ExclusiveSynchronizationContext();
         SynchronizationContext.SetSynchronizationContext(synch);
-        // ReSharper disable once AsyncVoidLambda
         synch.Post(async _ =>
         {
             try
@@ -49,18 +44,15 @@ public static class AsyncHelpers
     /// Executes an async Task{T} method which has a T return type synchronously
     /// </summary>
     /// <typeparam name="T">Return Type</typeparam>
-    /// <param name="task">Task{T} method to execute</param>
+    /// <param name="task">Task{T}> method to execute</param>
     /// <returns></returns>
-    [DebuggerHidden]
-    [DebuggerStepThrough]
     public static T? RunSync<T>(Func<Task<T>> task)
     {
         var oldContext = SynchronizationContext.Current;
-        var synch = new ExclusiveSynchronizationContext();
-        SynchronizationContext.SetSynchronizationContext(synch);
-        T? ret = default(T);
-        // ReSharper disable once AsyncVoidLambda
-        synch.Post(async _ =>
+        var newContext = new ExclusiveSynchronizationContext();
+        SynchronizationContext.SetSynchronizationContext(newContext);
+        var ret = default(T);
+        newContext.Post(async _ =>
         {
             try
             {
@@ -68,15 +60,15 @@ public static class AsyncHelpers
             }
             catch (Exception e)
             {
-                synch.InnerException = e;
+                newContext.InnerException = e;
                 throw;
             }
             finally
             {
-                synch.EndMessageLoop();
+                newContext.EndMessageLoop();
             }
         }, null);
-        synch.BeginMessageLoop();
+        newContext.BeginMessageLoop();
         SynchronizationContext.SetSynchronizationContext(oldContext);
         return ret;
     }
@@ -84,10 +76,9 @@ public static class AsyncHelpers
     private class ExclusiveSynchronizationContext : SynchronizationContext
     {
         private bool _done;
-        private readonly AutoResetEvent? _workItemsWaiting = new(false);
+        private readonly AutoResetEvent _workItemsWaiting = new AutoResetEvent(false);
         private readonly Queue<Tuple<SendOrPostCallback, object>> _items = new();
-        
-        public Exception? InnerException { get; set; }
+        public Exception InnerException { get; set; } = null!;
 
         public override void Send(SendOrPostCallback d, object? state)
         {
@@ -98,24 +89,21 @@ public static class AsyncHelpers
         {
             lock (_items)
             {
-                if (state != null)
-                {
-                    _items.Enqueue(Tuple.Create(d, state));
-                }
+                _items.Enqueue(Tuple.Create(d, state!));
             }
-            _workItemsWaiting?.Set();
+            _workItemsWaiting.Set();
         }
 
         public void EndMessageLoop()
         {
-            Post(_ => _done = true, null!);
+            Post(_ => _done = true, null);
         }
 
         public void BeginMessageLoop()
         {
             while (!_done)
             {
-                Tuple<SendOrPostCallback, object> task = null!;
+                Tuple<SendOrPostCallback, object>? task = null;
                 lock (_items)
                 {
                     if (_items.Count > 0)
@@ -126,14 +114,14 @@ public static class AsyncHelpers
                 if (task != null)
                 {
                     task.Item1(task.Item2);
-                    if (InnerException != null) // the method threw an exeption
+                    if (InnerException != null) // the method threw an exception
                     {
                         throw new AggregateException("AsyncHelpers.Run method threw an exception.", InnerException);
                     }
                 }
                 else
                 {
-                    _workItemsWaiting?.WaitOne();
+                    _workItemsWaiting.WaitOne();
                 }
             }
         }

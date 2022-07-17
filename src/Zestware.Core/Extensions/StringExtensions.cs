@@ -9,19 +9,37 @@ namespace Zestware
     public static class StringExtensions
     {
         /// <summary>
-        /// Performs a case-insensitive equality check with a default string comparison.
+        /// Performs a case-insensitive equality check.
         /// </summary>
         /// <param name="this">The string instance.</param>
-        /// <param name="comparison">The comparison string</param>
-        /// <returns></returns>
-        public static bool EqualsCaseInsensitive(this string @this, string comparison)
+        /// <param name="value">The comparison string</param>
+        /// <returns>true is the value parameter matches the string case-insensitive, otherwise false.</returns>
+        public static bool EqualsCaseInsensitive(this string @this, string value)
         {
-            return @this.Equals(comparison, StringComparison.OrdinalIgnoreCase);
+            return @this.Equals(value, StringComparison.OrdinalIgnoreCase);
+        }
+        
+        /// <summary>
+        /// Performs a case-insensitive contains check.
+        /// </summary>
+        /// <param name="this">The string instance.</param>
+        /// <param name="value">The value to look for.</param>
+        /// <returns>true if the value parameter occurs in the string case-insensitive or if the string is empty,
+        /// otherwise false.</returns>
+        public static bool ContainsCaseInsensitive(this string @this, string value)
+        {
+            return @this.Contains(value, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool ContainsCaseInsensitive(this string @this, string comparison)
+        /// <summary>
+        /// Splits the string into substrings based on the provided separator, trimming value and removing empty values.
+        /// </summary>
+        /// <param name="this">The string instance.</param>
+        /// <param name="separator">A string that delimits the substrings in this string.</param>
+        /// <returns></returns>
+        public static string[] Split(this string @this, string separator)
         {
-            return @this.Contains(comparison, StringComparison.OrdinalIgnoreCase);
+            return @this.Split(separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         }
 
         public static string ToCamelCase(this string @this)
@@ -49,14 +67,16 @@ namespace Zestware
             var split = phrase.Split(' ', '-', '.');
             var sb = new StringBuilder();
 
-            if (@case == Case.CamelCase)
+            switch (@case)
             {
-                sb.Append(split[0].ToLower());
-                split[0] = string.Empty;
-            }
-            else if (@case == Case.PascalCase)
-            {
-                sb = new StringBuilder();
+                case Case.CamelCase:
+                    sb.Append(split[0].ToLower());
+                    split[0] = string.Empty;
+                    break;
+                case Case.PascalCase:
+                    break;
+                default:
+                    throw new ArgumentException("Invalid Case type", nameof(@case));
             }
                 
             foreach (var s in split)
@@ -64,7 +84,7 @@ namespace Zestware
                 var chars = s.ToCharArray();
                 if (chars.Length > 0)
                 {
-                    chars[0] = ((new string(chars[0], 1)).ToUpper().ToCharArray())[0];
+                    chars[0] = new string(chars[0], 1).ToUpper().ToCharArray()[0];
                 }
                 sb.Append(new string(chars));
             }
