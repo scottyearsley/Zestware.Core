@@ -1,10 +1,13 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
 namespace Zestware.Core.UnitTests.Extensions;
 
 public class JsonExtensionTests
 {
+    private static readonly string NewLine = Environment.NewLine;
+    
     [Fact]
     public void ToJson_validObject_returnsJson()
     {
@@ -20,7 +23,7 @@ public class JsonExtensionTests
         var obj = new KeyValue { Key = "colour", Value = "red" };
         var result = obj.ToJson(true);
         Assert.NotNull(result);
-        Assert.Equal("{\r\n  \"key\": \"colour\",\r\n  \"value\": \"red\"\r\n}", result);
+        Assert.Equal($"{{{NewLine}  \"key\": \"colour\",{NewLine}  \"value\": \"red\"{NewLine}}}", result);
     }
 
     [Fact]
