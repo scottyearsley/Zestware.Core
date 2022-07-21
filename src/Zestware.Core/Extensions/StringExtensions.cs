@@ -44,20 +44,14 @@ namespace Zestware
 
         public static string ToCamelCase(this string @this)
         {
-            if (@this is null)
-            {
-                throw new ArgumentNullException(nameof(@this));
-            }
+            ArgumentNullException.ThrowIfNull(@this);
             
             return ConvertCaseString(@this, Case.CamelCase);
         }
 
         public static string ToPascalCase(this string @this)
         {
-            if (@this is null)
-            {
-                throw new ArgumentNullException(nameof(@this));
-            }
+            ArgumentNullException.ThrowIfNull(@this);
             
             return ConvertCaseString(@this, Case.PascalCase);
         }

@@ -5,6 +5,11 @@
         <RootNamespace>Zestware</RootNamespace>
         <LangVersion>10</LangVersion>
         <Nullable>enable</Nullable>
+        <Authors>Zestware</Authors>
+        <AssemblyVersion>1.0.1</AssemblyVersion>
+        <FileVersion>1.0.1</FileVersion>
+        <PackageVersion>1.0.1</PackageVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>

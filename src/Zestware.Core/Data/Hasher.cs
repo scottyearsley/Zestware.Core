@@ -15,10 +15,7 @@ public static class Hasher
     /// <returns>A hexadecimal hash as a <see cref="string"/></returns>
     public static string XxHash(string? text)
     {
-        if (text is null)
-        {
-            throw new ArgumentNullException(nameof(text));
-        }
+        ArgumentNullException.ThrowIfNull(text);
         
         var stringBytes = Encoding.UTF8.GetBytes(text);
         var hasher = xxHashFactory.Instance.Create();
@@ -34,10 +31,7 @@ public static class Hasher
     /// <returns>A hexadecimal hash as a <see cref="string"/></returns>
     public static async Task<string> XxHashAsync(string? text)
     {
-        if (text is null)
-        {
-            throw new ArgumentNullException(nameof(text));
-        }
+        ArgumentNullException.ThrowIfNull(text);
         
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
         var hasher = xxHashFactory.Instance.Create();
