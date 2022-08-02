@@ -38,7 +38,7 @@ public class AsyncHelperTests
 
     private async Task AsyncMethod()
     {
-        await Task.Delay(100);
+        await Task.Delay(110);
     }
     
     private async Task<int> AsyncMethod(int value)
