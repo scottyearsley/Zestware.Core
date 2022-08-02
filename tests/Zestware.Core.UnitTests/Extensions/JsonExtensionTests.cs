@@ -9,7 +9,7 @@ public class JsonExtensionTests
     private static readonly string NewLine = Environment.NewLine;
     
     [Fact]
-    public void ToJson_validObject_returnsJson()
+    public void ToJson_ValidObject_ReturnsFlatJson()
     {
         var obj = new KeyValue { Key = "colour", Value = "red" };
         var result = obj.ToJson();
@@ -18,7 +18,7 @@ public class JsonExtensionTests
     }
     
     [Fact]
-    public void ToJson_prettyPrint_returnsIndentedJson()
+    public void ToJson_PrettyPrint_ReturnsIndentedJson()
     {
         var obj = new KeyValue { Key = "colour", Value = "red" };
         var result = obj.ToJson(true);
@@ -27,7 +27,7 @@ public class JsonExtensionTests
     }
 
     [Fact]
-    public void ToJson_nullObject_returnsNull()
+    public void ToJson_NullObject_ReturnsNull()
     {
         KeyValue obj = null!;
         var result = obj.ToJson();
@@ -35,7 +35,7 @@ public class JsonExtensionTests
     }
 
     [Fact]
-    public void FromJson_typed_returnsObject()
+    public void FromJson_Typed_ReturnsObject()
     {
         var jsonString = @"{""key"": ""colour"", ""value"": ""red""}";
         var result = jsonString.FromJson<KeyValue>();
@@ -46,7 +46,7 @@ public class JsonExtensionTests
     }
 
     [Fact]
-    public void FromJson_untyped_returnsDynamic()
+    public void FromJson_Untyped_ReturnsDynamic()
     {
         var jsonString = @"{""key"": ""colour"", ""value"": ""red""}";
         var result = jsonString.FromJson();

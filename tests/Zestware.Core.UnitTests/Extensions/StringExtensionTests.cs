@@ -66,4 +66,26 @@ public class StringExtensionTests
             Assert.Equal(expected, result);
         }
     }
+
+    [Fact]
+    public void XxHash_NonNullValue_ReturnsHash()
+    {
+        var result = "a string value".XxHash();
+        Assert.NotNull(result);
+        Assert.True(result.Length == 8);
+    }
+
+    [Fact]
+    public void XxHash_EmptyValue_ReturnsHash()
+    {
+        var result = "".XxHash();
+        Assert.NotNull(result);
+        Assert.True(result.Length == 8);
+    }
+
+    [Fact]
+    public void XxHash_NullValue_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => ((string)null!).XxHash());
+    }
 }

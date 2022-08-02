@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Zestware.Data;
 
 namespace Zestware
 {
@@ -13,14 +14,14 @@ namespace Zestware
         /// </summary>
         /// <param name="this">The string instance.</param>
         /// <param name="value">The comparison string</param>
-        /// <returns>true is the value parameter matches the string case-insensitive, otherwise false.</returns>
+        /// <returns>true if the value parameter matches the string case-insensitive, otherwise false.</returns>
         public static bool EqualsCaseInsensitive(this string @this, string value)
         {
             return @this.Equals(value, StringComparison.OrdinalIgnoreCase);
         }
         
         /// <summary>
-        /// Performs a case-insensitive contains check.
+        /// Performs a case-insensitive `Contains` check.
         /// </summary>
         /// <param name="this">The string instance.</param>
         /// <param name="value">The value to look for.</param>
@@ -32,14 +33,15 @@ namespace Zestware
         }
 
         /// <summary>
-        /// Splits the string into substrings based on the provided separator, trimming value and removing empty values.
+        /// Splits the provided <see cref="string"/> into substrings based on the provided separator, 
+        /// trimming split values and removing empty entries.
         /// </summary>
-        /// <param name="this">The string instance.</param>
-        /// <param name="separator">A string that delimits the substrings in this string.</param>
-        /// <returns></returns>
-        public static string[] Split(this string @this, string separator)
+        /// <param name="this">The <see cref="string"/> instance.</param>
+        /// <param name="separators">A param array of string that delimits the substrings in this string.</param>
+        /// <returns>The values split as string[]</returns>
+        public static string[] Split(this string @this, params string[] separators)
         {
-            return @this.Split(separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            return @this.Split(separators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         }
 
         public static string ToCamelCase(this string @this)
@@ -54,6 +56,14 @@ namespace Zestware
             ArgumentNullException.ThrowIfNull(@this);
             
             return ConvertCaseString(@this, Case.PascalCase);
+        }
+
+        
+        public static string XxHash(this string @this)
+        {
+            ArgumentNullException.ThrowIfNull(@this);
+
+            return Hasher.XxHash(@this);
         }
         
         private static string ConvertCaseString(string phrase, Case @case)

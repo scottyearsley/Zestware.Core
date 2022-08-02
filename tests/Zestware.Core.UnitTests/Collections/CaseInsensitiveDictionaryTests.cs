@@ -6,7 +6,7 @@ namespace Zestware.Core.UnitTests.Collections;
 public class CaseInsensitiveDictionaryTests
 {
     [Fact]
-    public void GetValueCaseInsensitive()
+    public void Get_KeyExistsWithDifferentCasing_ReturnsValue()
     {
         var dictionary = new CaseInsensitiveDictionary<string>
         {
