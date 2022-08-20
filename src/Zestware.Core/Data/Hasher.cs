@@ -31,7 +31,7 @@ public static class Hasher
     /// Generates a unique xxhash for the specified <see cref="string"/> asynchronously.
     /// </summary>
     /// <param name="text">The <see cref="string"/> to be hashed.</param>
-    /// <returns>A hexadecimal hash as a <see cref="string"/></returns>
+    /// <returns>A hexadecimal hash as a <see cref="string"/>.</returns>
     public static async Task<string> XxHashAsync(string? text)
     {
         ArgumentNullException.ThrowIfNull(text);
